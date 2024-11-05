@@ -5,6 +5,7 @@ env:
     DOCKER_USER: AWS
     REPOSITORY_URI: "851725377005.dkr.ecr.ap-northeast-1.amazonaws.com"
     IMAGE_NAME: api-repository
+    IMAGE_TAG: latest 
 
 phases:
   pre_build:
