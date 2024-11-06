@@ -20,7 +20,7 @@ phases:
     commands:
       - echo "ECRへpush"
       - docker push "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG"
-      - printf '[{"name":"handson-torii-api","imageUri":"%s"}]' "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG" > imageDetail.json
+      - printf '[{"name":"handson-torii-api-task-def","imageUri":"%s"}]' "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG" > imageDetail.json
 artifacts:
   files: 
     - imageDetail.json

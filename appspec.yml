@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:ap-northeast-1:851725377005:task-definition/api-repository"
+        TaskDefinition: "arn:aws:ecs:ap-northeast-1:851725377005:task-definition/handson-torii-api-task-def:latest"
         LoadBalancerInfo:
           ContainerName: "handson-torii-api"
           ContainerPort: 80
