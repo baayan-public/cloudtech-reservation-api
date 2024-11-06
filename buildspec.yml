@@ -19,8 +19,8 @@ phases:
   post_build:
     commands:
       - echo "ECRへpush"
-      - docker push "$REPOSITORY_URI/$IMAGE_NAME:latest"
-      - printf '{"Version":"1.0","ImageURI":"%s"}' $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG > imageDetail.json
+      - docker push "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG"
+      - printf '[{"name":"handson-torii-api","imageUri":"%s"}]' "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG" > imageDetail.json
 artifacts:
   files: 
     - imageDetail.json
