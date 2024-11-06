@@ -3,26 +3,30 @@ env:
   variables:
     AWS_DEFAULT_REGION: "ap-northeast-1"
     DOCKER_USER: AWS
-    REPOSITORY_URI: "851725377005.dkr.ecr.ap-northeast-1.amazonaws.com"
-    IMAGE_NAME: api-repository
+    ECR_MAIN_URI: "851725377005.dkr.ecr.ap-northeast-1.amazonaws.com"
+    ECR_REPO_NAME: api-repository
     IMAGE_TAG: latest 
 
 phases:
   pre_build:
     commands:
       - echo "ECRへログイン"
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username $DOCKER_USER --password-stdin $REPOSITORY_URI
+      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username ${DOCKER_USER} --password-stdin ${ECR_MAIN_URI}
   build:
     commands:
       - echo "ビルド開始"
-      - docker build -t "$REPOSITORY_URI/$IMAGE_NAME:latest" .
+      - docker build -t "${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest" .
   post_build:
     commands:
       - echo "ECRへpush"
-      - docker push "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG"
-      - printf '[{"name":"handson-torii-api-task-def","imageUri":"%s"}]' "$REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG" > imageDetail.json
+      - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
+      - docker tag cth1-container:latest ${ECR_IMAGE_URI}
+      - docker push "${ECR_IMAGE_URI}"
+
+      - printf '{"ImageURI":"%s"}' ${ECR_IMAGE_URI} > imageDetail.json
 artifacts:
   files: 
     - imageDetail.json
     - appspec.yml
+    - taskdef.json
 
