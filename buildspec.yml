@@ -20,7 +20,7 @@ phases:
     commands:
       - echo "ECRへpush"
       - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
-      - docker tag cth1-container:latest ${ECR_IMAGE_URI}
+      - docker tag ${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest ${ECR_IMAGE_URI}
       - docker push "${ECR_IMAGE_URI}"
 
       - printf '{"ImageURI":"%s"}' ${ECR_IMAGE_URI} > imageDetail.json
