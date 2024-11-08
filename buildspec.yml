@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     ECR_REPO_NAME: api-repository
+    CONTAINER_NAME: handson-torii-api
     AWS_ACCOUNT_ID: 851725377005
 phases:
   pre_build:
@@ -24,7 +25,7 @@ phases:
       - docker tag ${ECR_REPO_NAME}:latest ${ECR_IMAGE_URI}
       - docker push ${ECR_IMAGE_URI}
 
-      - printf '[{"name":"code-nginx-contaier-name","imageUri":"%s"}]' ${ECR_IMAGE_URI} > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' "${CONTAINER_NAME}" "${ECR_IMAGE_URI}" > imagedefinitions.json
         
 artifacts:
   files:
