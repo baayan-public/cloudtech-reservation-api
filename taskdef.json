@@ -109,6 +109,5 @@
         "operatingSystemFamily": "LINUX"
     },
     "registeredAt": "2024-11-06T09:40:47.286Z",
-    "registeredBy": "arn:aws:sts::851725377005:assumed-role/AWSReservedSSO_AWSAdministratorAccess_6375c31a55339d36/takashi.torii@ntt.com",
-    "tags": []
+    "registeredBy": "arn:aws:sts::851725377005:assumed-role/AWSReservedSSO_AWSAdministratorAccess_6375c31a55339d36/takashi.torii@ntt.com"
 }

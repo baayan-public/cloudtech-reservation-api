@@ -16,20 +16,26 @@ phases:
 
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_MAIN_URI}
 
-      - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest"
   build:
     commands:
       - docker build -t ${ECR_REPO_NAME}:latest .
+      
   post_build:
     commands:
+      - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
       - docker tag ${ECR_REPO_NAME}:latest ${ECR_IMAGE_URI}
       - docker push ${ECR_IMAGE_URI}
 
       - printf '[{"name":"%s","imageUri":"%s"}]' "${CONTAINER_NAME}" "${ECR_IMAGE_URI}" > imagedefinitions.json
+      - printf '{"ImageURI":"%s"}' ${ECR_IMAGE_URI} > imageDetail.json
         
 artifacts:
   files:
     - imagedefinitions.json
+    - imageDetail.json
+    - appspec.yml
+    - taskdef.json
+
 
 # version: 0.2
 # env:
