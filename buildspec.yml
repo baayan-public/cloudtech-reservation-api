@@ -1,32 +1,45 @@
-version: 0.2
-env:
-  variables:
-    AWS_DEFAULT_REGION: "ap-northeast-1"
-    DOCKER_USER: AWS
-    ECR_MAIN_URI: "851725377005.dkr.ecr.ap-northeast-1.amazonaws.com"
-    ECR_REPO_NAME: api-repository
-    IMAGE_TAG: latest 
-
-phases:
-  pre_build:
-    commands:
-      - echo "ECRへログイン"
-      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username ${DOCKER_USER} --password-stdin ${ECR_MAIN_URI}
-  build:
-    commands:
-      - echo "ビルド開始"
-      - docker build -t "${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest" .
-  post_build:
-    commands:
-      - echo "ECRへpush"
-      - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
-      - docker tag ${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest ${ECR_IMAGE_URI}
-      - docker push "${ECR_IMAGE_URI}"
-
-      - printf '{"ImageURI":"%s"}' ${ECR_IMAGE_URI} > imageDetail.json
+build:
+  commands:
+    - REPOSITORY_URI=${ECR_URI}                       # ECRのリポジトリURI (環境変数で設定)
+    - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}  # CodeBuildのビルド環境の環境変数を利用(コミットID)
+    - docker build -t $REPOSITORY_URI:$IMAGE_TAG .    # Dockerfileをビルド
+post_build:
+  commands:
+    - docker push $REPOSITORY_URI:$IMAGE_TAG          # ECRにプッシュ
+    - echo "[{\"name\":\"${CONTAINER_NAME}\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json #imagedefinitions.jsonの作成
 artifacts:
-  files: 
-    - imageDetail.json
-    - appspec.yml
-    - taskdef.json
+  files: imagedefinitions.json
+
+
+# version: 0.2
+# env:
+#   variables:
+#     AWS_DEFAULT_REGION: "ap-northeast-1"
+#     DOCKER_USER: AWS
+#     ECR_MAIN_URI: "851725377005.dkr.ecr.ap-northeast-1.amazonaws.com"
+#     ECR_REPO_NAME: api-repository
+#     IMAGE_TAG: latest 
+
+# phases:
+#   pre_build:
+#     commands:
+#       - echo "ECRへログイン"
+#       - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username ${DOCKER_USER} --password-stdin ${ECR_MAIN_URI}
+#   build:
+#     commands:
+#       - echo "ビルド開始"
+#       - docker build -t "${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest" .
+#   post_build:
+#     commands:
+#       - echo "ECRへpush"
+#       - ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
+#       - docker tag ${ECR_MAIN_URI}/${ECR_REPO_NAME}:latest ${ECR_IMAGE_URI}
+#       - docker push "${ECR_IMAGE_URI}"
+
+#       - printf '{"ImageURI":"%s"}' ${ECR_IMAGE_URI} > imageDetail.json
+# artifacts:
+#   files: 
+#     - imageDetail.json
+#     - appspec.yml
+#     - taskdef.json
 
