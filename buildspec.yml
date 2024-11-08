@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     ECR_REPO_NAME: api-repository
+    AWS_ACCOUNT_ID: 851725377005
 phases:
   pre_build:
     commands:
